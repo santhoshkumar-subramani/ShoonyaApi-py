@@ -4,6 +4,11 @@ import logging
 import time
 import yaml
 import pandas as pd
+import mfa
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #sample
 logging.basicConfig(level=logging.DEBUG)
@@ -59,12 +64,7 @@ api = ShoonyaApiPy()
 
 #ret = api.login(userid = user, password = pwd, twoFA=factor2, vendor_code=vc, api_secret=apikey, imei=imei)
 
-#yaml for parameters
-with open('cred.yml') as f:
-    cred = yaml.load(f, Loader=yaml.FullLoader)
-    print(cred)
-
-ret = api.login(userid = cred['user'], password = cred['pwd'], twoFA=cred['factor2'], vendor_code=cred['vc'], api_secret=cred['apikey'], imei=cred['imei'])
+ret = api.login(userid = os.getenv('FINVASIA_USER_ID'), password = os.getenv('FINVASIA_PASSWORD'), twoFA=mfa.getTOTP(), vendor_code=os.getenv('FINVASIA_VENDOR_CODE'), api_secret=os.getenv('FINVASIA_API_SECRET'), imei=os.getenv('FINVASIA_IMEI'))
 
 if ret != None:   
     while True:

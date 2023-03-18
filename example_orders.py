@@ -4,6 +4,11 @@ import logging
 import time
 import yaml
 import pandas as pd
+import os
+import mfa
+from dotenv import load_dotenv
+
+load_dotenv()
  
 logging.basicConfig(level=logging.DEBUG)
 
@@ -55,11 +60,10 @@ api = ShoonyaApiPy()
 #ret = api.login(userid = user, password = pwd, twoFA=factor2, vendor_code=vc, api_secret=apikey, imei=imei)
 
 #yaml for parameters
-with open('cred.yml') as f:
-    cred = yaml.load(f, Loader=yaml.FullLoader)
-    print(cred)
 
-ret = api.login(userid = cred['user'], password = cred['pwd'], twoFA=cred['factor2'], vendor_code=cred['vc'], api_secret=cred['apikey'], imei=cred['imei'])
+
+#ret = api.login(userid = cred['user'], password = cred['pwd'], twoFA=cred['factor2'], vendor_code=cred['vc'], api_secret=cred['apikey'], imei=cred['imei'])
+ret = api.login(userid = os.getenv('FINVASIA_USER_ID'), password = os.getenv('FINVASIA_PASSWORD'), twoFA=mfa.getTOTP(), vendor_code=os.getenv('FINVASIA_VENDOR_CODE'), api_secret=os.getenv('FINVASIA_API_SECRET'), imei=os.getenv('FINVASIA_IMEI'))
 
 if ret != None:   
     while True:
@@ -79,7 +83,7 @@ if ret != None:
             
         if prompt1 == 'p':
             ret = api.place_order(buy_or_sell='B', product_type='C',
-                        exchange='NSE', tradingsymbol='INFY-EQ', 
+                        exchange='NFO', tradingsymbol='BANKNIFTY29MAR23C40000', 
                         quantity=1, discloseqty=0,price_type='LMT', price=1500.00, trigger_price=None,
                         retention='DAY', remarks='my_order_001')
             print(ret)
